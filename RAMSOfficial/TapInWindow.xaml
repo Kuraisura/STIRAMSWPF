@@ -1,0 +1,374 @@
+<Window x:Class="RAMSOfficial.TapInWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:RAMSOfficial.Converters"
+        Title="Employee Tap-In — RAMS"
+        Height="1080" Width="1920"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Normal"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Topmost="False"
+        ShowInTaskbar="True"
+        UseLayoutRounding="True"
+        Loaded="Window_Loaded"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+
+        <SolidColorBrush x:Key="PageBackground" Color="#F4FAF6"/>
+        <SolidColorBrush x:Key="HeaderBackground" Color="#16A34A"/>
+        <SolidColorBrush x:Key="HeaderText" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="CardBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="CardBorder" Color="#D1E7DD"/>
+        <SolidColorBrush x:Key="PrimaryText" Color="#14532D"/>
+        <SolidColorBrush x:Key="BodyText" Color="#334155"/>
+        <SolidColorBrush x:Key="MutedText" Color="#64748B"/>
+        <SolidColorBrush x:Key="TimeInColor" Color="#15803D"/>
+        <SolidColorBrush x:Key="TimeOutColor" Color="#1D4ED8"/>
+        <SolidColorBrush x:Key="WarningColor" Color="#B45309"/>
+
+        <Storyboard x:Key="PulseAnimation" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="PulseRing"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0.75" To="0.2" Duration="0:0:1.4"
+                             AutoReverse="True"/>
+            <DoubleAnimation Storyboard.TargetName="PulseRing"
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                             From="1.0" To="1.1" Duration="0:0:1.4"
+                             AutoReverse="True"/>
+            <DoubleAnimation Storyboard.TargetName="PulseRing"
+                             Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                             From="1.0" To="1.1" Duration="0:0:1.4"
+                             AutoReverse="True"/>
+        </Storyboard>
+
+        <Storyboard x:Key="CardShowAnimation">
+            <DoubleAnimation Storyboard.TargetName="Backdrop" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.18"/>
+            <DoubleAnimation Storyboard.TargetName="ProfileCard" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22"/>
+            <DoubleAnimation Storyboard.TargetName="ProfileCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" From="0.95" To="1" Duration="0:0:0.22"/>
+            <DoubleAnimation Storyboard.TargetName="ProfileCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" From="0.95" To="1" Duration="0:0:0.22"/>
+            <DoubleAnimation Storyboard.TargetName="CountdownRect" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" From="1" To="0" Duration="0:0:10"/>
+        </Storyboard>
+
+        <Storyboard x:Key="CardHideAnimation">
+            <DoubleAnimation Storyboard.TargetName="Backdrop" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+            <DoubleAnimation Storyboard.TargetName="ProfileCard" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+            <DoubleAnimation Storyboard.TargetName="ProfileCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.98" Duration="0:0:0.15"/>
+            <DoubleAnimation Storyboard.TargetName="ProfileCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.98" Duration="0:0:0.15"/>
+        </Storyboard>
+
+        <Storyboard x:Key="ErrorShowAnimation">
+            <DoubleAnimation Storyboard.TargetName="Backdrop" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.18"/>
+            <DoubleAnimation Storyboard.TargetName="ErrorCard" Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:0.22"/>
+            <DoubleAnimation Storyboard.TargetName="ErrorCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" From="0.95" To="1" Duration="0:0:0.22"/>
+            <DoubleAnimation Storyboard.TargetName="ErrorCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" From="0.95" To="1" Duration="0:0:0.22"/>
+            <DoubleAnimation Storyboard.TargetName="ErrorCountdownRect" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" From="1" To="0" Duration="0:0:10"/>
+        </Storyboard>
+
+        <Storyboard x:Key="ErrorHideAnimation">
+            <DoubleAnimation Storyboard.TargetName="Backdrop" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+            <DoubleAnimation Storyboard.TargetName="ErrorCard" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.15"/>
+            <DoubleAnimation Storyboard.TargetName="ErrorCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.98" Duration="0:0:0.15"/>
+            <DoubleAnimation Storyboard.TargetName="ErrorCard" Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.98" Duration="0:0:0.15"/>
+        </Storyboard>
+
+        <Storyboard x:Key="SpinnerPulse" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="SpinnerIcon"
+                             Storyboard.TargetProperty="Opacity"
+                             From="1" To="0.35" Duration="0:0:0.6"
+                             AutoReverse="True"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource PulseAnimation}"/>
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Grid Background="{StaticResource PageBackground}" SnapsToDevicePixels="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="88"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="46"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{StaticResource HeaderBackground}" BorderBrush="#15803D" BorderThickness="0,0,0,1">
+            <Grid Margin="28,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="28" Foreground="{StaticResource HeaderText}" Margin="0,0,12,0"/>
+                    <TextBlock Text="RFID ATTENDANCE KIOSK" FontSize="28" FontWeight="Bold" Foreground="{StaticResource HeaderText}"/>
+                </StackPanel>
+
+                <Border Grid.Column="1" Background="#14532D" CornerRadius="10" Padding="16,8" VerticalAlignment="Center" BorderBrush="#22C55E" BorderThickness="1.5">
+                    <StackPanel>
+                        <TextBlock Text="{Binding CurrentTime}" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding CurrentDate}" FontSize="12" Foreground="#DCFCE7" HorizontalAlignment="Right" Margin="0,-2,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <TextBox x:Name="RfidInputBox" Opacity="0" Height="0" Width="0" IsTabStop="False"/>
+
+            <Grid Margin="40,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="2*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="{StaticResource CardBackground}" BorderBrush="{StaticResource CardBorder}" BorderThickness="1.5" CornerRadius="20" Padding="28">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Grid Width="168" Height="168" Margin="0,0,0,26">
+                            <Ellipse x:Name="PulseRing"
+                                     Width="168" Height="168"
+                                     Fill="#D1FAE5" Stroke="#86EFAC" StrokeThickness="3"
+                                     RenderTransformOrigin="0.5,0.5">
+                                <Ellipse.RenderTransform>
+                                    <ScaleTransform ScaleX="1" ScaleY="1"/>
+                                </Ellipse.RenderTransform>
+                            </Ellipse>
+                            <Ellipse Fill="#16A34A" Width="116" Height="116"/>
+                            <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="54" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <TextBlock Text="READY TO SCAN" FontSize="38" FontWeight="Black" Foreground="{StaticResource PrimaryText}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Tap your RFID card on the reader" FontSize="16" Foreground="{StaticResource MutedText}" HorizontalAlignment="Center" Margin="0,6,0,22"/>
+
+                        <Border Background="#FFFBEB" BorderBrush="#FDE68A" BorderThickness="1.5" CornerRadius="12" Padding="18,12">
+                            <StackPanel>
+                                <TextBlock HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource WarningColor}">
+                                    <Run Text="Press "/>
+                                    <Run Text="SPACEBAR" FontWeight="Bold"/>
+                                    <Run Text=" to type your ID manually"/>
+                                </TextBlock>
+                                <TextBlock Text="Use this if the RFID reader does not detect your card"
+                                           FontSize="11"
+                                           Foreground="#9A3412"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Background="{StaticResource CardBackground}" BorderBrush="{StaticResource CardBorder}" BorderThickness="1.5" CornerRadius="20" Padding="18">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="4,2,0,12">
+                            <TextBlock Text="&#xE81C;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{StaticResource TimeOutColor}" Margin="0,0,8,0"/>
+                            <TextBlock Text="RECENT ATTENDANCE" FontSize="18" FontWeight="Bold" Foreground="{StaticResource PrimaryText}"/>
+                        </StackPanel>
+
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                            <ItemsControl ItemsSource="{Binding RecentAttendance}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="0,0,0,8" Padding="10" CornerRadius="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="0" Width="44" Height="44" CornerRadius="22" Margin="0,0,12,0" BorderBrush="#3B82F6" BorderThickness="1.5" Background="#64748B">
+                                                    <Grid>
+                                                        <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="18" Foreground="#E2E8F0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        <Border CornerRadius="22" ClipToBounds="True" Visibility="{Binding HasPhoto, Converter={StaticResource BoolToVis}}">
+                                                            <Image Source="{Binding Photo}" Stretch="UniformToFill" Width="41" Height="41"/>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,8,0">
+                                                    <TextBlock Text="{Binding FullName}" FontSize="14" FontWeight="SemiBold" Foreground="#1E293B" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Text="{Binding Department}" FontSize="12" Foreground="#64748B" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+
+                                                <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                    <Border CornerRadius="10" Padding="10,3" HorizontalAlignment="Right" Margin="0,0,0,3">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="#16A34A"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding LogType}" Value="OUT">
+                                                                        <Setter Property="Background" Value="#2563EB"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <TextBlock Text="{Binding LogTypeText}" FontSize="10" FontWeight="Bold" Foreground="White"/>
+                                                    </Border>
+                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                        <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="Bold" Foreground="{Binding StatusBrush}" Margin="0,0,4,0"/>
+                                                        <TextBlock Text="{Binding LogTimeFormatted}" FontSize="11" Foreground="#64748B"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <StackPanel Grid.Row="1"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Visibility="{Binding HasRecentAttendance, Converter={StaticResource InverseBoolToVis}}">
+                            <TextBlock Text="&#xE14C;" FontFamily="Segoe MDL2 Assets" FontSize="34" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBlock Text="No attendance records yet today" FontSize="14" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border x:Name="Backdrop" Opacity="0" IsHitTestVisible="False" Background="#12000000"/>
+
+            <StackPanel x:Name="ProcessingOverlay" VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}">
+                <TextBlock x:Name="SpinnerIcon" Text="&#xE895;" FontFamily="Segoe MDL2 Assets" FontSize="74" Foreground="#166534" HorizontalAlignment="Center"/>
+                <TextBlock Text="Processing..." FontSize="30" FontWeight="SemiBold" Foreground="#166534" HorizontalAlignment="Center" Margin="0,16,0,0"/>
+            </StackPanel>
+
+            <Border x:Name="ProfileCard"
+                    Opacity="0"
+                    IsHitTestVisible="False"
+                    MaxWidth="620"
+                    MinWidth="460"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                </Border.RenderTransform>
+
+                <Grid>
+                    <Border Background="White" BorderBrush="#86EFAC" BorderThickness="2" CornerRadius="24" Padding="34,30,34,40">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Width="132" Height="132" CornerRadius="66" HorizontalAlignment="Center" BorderBrush="#3B82F6" BorderThickness="3" Background="#64748B" Margin="0,0,0,14">
+                                <Grid>
+                                    <TextBlock Text="&#xE77B;" FontFamily="Segoe MDL2 Assets" FontSize="46" Foreground="#E2E8F0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Border CornerRadius="66" ClipToBounds="True" Visibility="{Binding HasPhoto, Converter={StaticResource BoolToVis}}">
+                                        <Image Source="{Binding EmployeePhoto}" Stretch="UniformToFill" Width="126" Height="126"/>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <StackPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,0,4">
+                                <TextBlock Text="{Binding EmployeeName}" FontSize="30" FontWeight="Bold" Foreground="#14532D" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="500"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,0">
+                                    <TextBlock Text="ID: " FontSize="15" Foreground="#475569"/>
+                                    <TextBlock Text="{Binding EmployeeIdDisplay}" FontSize="15" FontWeight="SemiBold" Foreground="#334155"/>
+                                    <TextBlock Text="  •  " FontSize="15" Foreground="#94A3B8"/>
+                                    <TextBlock Text="{Binding Department}" FontSize="15" FontWeight="SemiBold" Foreground="#334155"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <Border Grid.Row="2" Height="1" Background="#D1E7DD" Margin="20,16"/>
+
+                            <StackPanel Grid.Row="3" HorizontalAlignment="Center">
+                                <Border CornerRadius="18" Padding="44,12" MinWidth="220" HorizontalAlignment="Center">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="#16A34A"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsTapIn}" Value="False">
+                                                    <Setter Property="Background" Value="#2563EB"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{Binding TapDirection}" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{Binding TapTimestamp}" FontSize="18" Foreground="#64748B" HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <Border VerticalAlignment="Bottom" CornerRadius="0,0,24,24" ClipToBounds="True">
+                        <Rectangle x:Name="CountdownRect" Height="6" RenderTransformOrigin="0,0.5">
+                            <Rectangle.Style>
+                                <Style TargetType="Rectangle">
+                                    <Setter Property="Fill" Value="#16A34A"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsTapIn}" Value="False">
+                                            <Setter Property="Fill" Value="#2563EB"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Rectangle.Style>
+                            <Rectangle.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Rectangle.RenderTransform>
+                        </Rectangle>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Border x:Name="ErrorCard"
+                    Opacity="0"
+                    IsHitTestVisible="False"
+                    MaxWidth="560"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                </Border.RenderTransform>
+
+                <Grid>
+                    <Border Background="White" BorderBrush="#EF4444" BorderThickness="2" CornerRadius="22" Padding="44,34,44,42">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="&#xEA39;" FontFamily="Segoe MDL2 Assets" FontSize="52" Foreground="#DC2626" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Row="1" Text="Tap Failed" FontSize="30" FontWeight="Bold" Foreground="#DC2626" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                            <TextBlock Grid.Row="2" Text="{Binding ErrorMessage}" FontSize="17" Foreground="#334155" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,10,0,0" MaxWidth="420"/>
+                        </Grid>
+                    </Border>
+
+                    <Border VerticalAlignment="Bottom" CornerRadius="0,0,22,22" ClipToBounds="True">
+                        <Rectangle x:Name="ErrorCountdownRect" Height="6" Fill="#EF4444" RenderTransformOrigin="0,0.5">
+                            <Rectangle.RenderTransform>
+                                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                            </Rectangle.RenderTransform>
+                        </Rectangle>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Background="#D1E7DD" BorderBrush="#BBF7D0" BorderThickness="0,1,0,0">
+            <TextBlock Text="RFID Attendance Management System  •  Press ESC to close"
+                       Foreground="#334155"
+                       FontSize="12"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+        </Border>
+    </Grid>
+</Window>

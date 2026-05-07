@@ -1,0 +1,12 @@
+<Application x:Class="RAMSOfficial.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- STI Color Resources -->
+            <SolidColorBrush x:Key="STIBlue" Color="#0066CC"/>
+            <SolidColorBrush x:Key="STIYellow" Color="#FFDD00"/>
+            <SolidColorBrush x:Key="STILightBlue" Color="#E3F2FD"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

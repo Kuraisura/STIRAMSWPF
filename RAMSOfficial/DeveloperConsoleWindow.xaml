@@ -1,0 +1,31 @@
+<Window x:Class="RAMSOfficial.DeveloperConsoleWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Developer Console"
+        Height="640"
+        Width="980"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize"
+        MinWidth="760"
+        MinHeight="480"
+        Background="#0C0C0C"
+        Loaded="Window_Loaded"
+        KeyDown="Window_KeyDown">
+
+    <Grid Margin="8">
+        <TextBox x:Name="TerminalTextBox"
+                 FontFamily="Consolas"
+                 FontSize="14"
+                 Foreground="#E5E5E5"
+                 Background="#0C0C0C"
+                 BorderThickness="0"
+                 CaretBrush="#E5E5E5"
+                 AcceptsReturn="True"
+                 AcceptsTab="False"
+                 TextWrapping="NoWrap"
+                 VerticalScrollBarVisibility="Auto"
+                 HorizontalScrollBarVisibility="Auto"
+                 PreviewKeyDown="TerminalTextBox_PreviewKeyDown"
+                 PreviewMouseDown="TerminalTextBox_PreviewMouseDown"/>
+    </Grid>
+</Window>

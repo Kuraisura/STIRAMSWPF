@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36414.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAMSOfficial", "RAMSOfficial\RAMSOfficial.csproj", "{996BA156-8B84-43D4-B7D6-737C4DB76607}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "RAMSOfficialSetup", "RAMSOfficialSetup\RAMSOfficialSetup.vdproj", "{D70C0B33-5B0E-67BF-4116-1F388E287856}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{996BA156-8B84-43D4-B7D6-737C4DB76607}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{996BA156-8B84-43D4-B7D6-737C4DB76607}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{996BA156-8B84-43D4-B7D6-737C4DB76607}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{996BA156-8B84-43D4-B7D6-737C4DB76607}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D70C0B33-5B0E-67BF-4116-1F388E287856}.Debug|Any CPU.ActiveCfg = Debug
+		{D70C0B33-5B0E-67BF-4116-1F388E287856}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0DCC5489-EF24-47FA-A216-1264FB04F90E}
+	EndGlobalSection
+EndGlobal

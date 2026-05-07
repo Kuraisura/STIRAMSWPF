@@ -1,0 +1,385 @@
+<Window x:Class="RAMSOfficial.EmployeeProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Employee Profile"
+        WindowStyle="None"
+        WindowState="Maximized"
+        Height="1080"
+        Width="1920"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F6F9"
+        ResizeMode="NoResize"
+        ShowInTaskbar="True"
+        Topmost="True"
+        Loaded="Window_Loaded"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Window.Resources>
+        <!-- ══════ Light Palette — max readability ══════ -->
+        <SolidColorBrush x:Key="PageBg"        Color="#F4F6F9"/>
+        <SolidColorBrush x:Key="CardBg"        Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="CardBorder"    Color="#E2E8F0"/>
+        <SolidColorBrush x:Key="AccentBrush"   Color="#0066CC"/>
+        <SolidColorBrush x:Key="AccentLight"   Color="#E8F1FB"/>
+        <SolidColorBrush x:Key="TextBlack"     Color="#1A1A2E"/>
+        <SolidColorBrush x:Key="TextDark"      Color="#334155"/>
+        <SolidColorBrush x:Key="TextMid"       Color="#64748B"/>
+        <SolidColorBrush x:Key="TextLight"     Color="#94A3B8"/>
+        <SolidColorBrush x:Key="RowBg"         Color="#F8FAFC"/>
+        <SolidColorBrush x:Key="GreenText"     Color="#15803D"/>
+        <SolidColorBrush x:Key="GreenBg"       Color="#F0FDF4"/>
+        <SolidColorBrush x:Key="GreenBorder"   Color="#BBF7D0"/>
+
+        <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,0">
+            <GradientStop Color="#0052A3" Offset="0"/>
+            <GradientStop Color="#0077E6" Offset="0.5"/>
+            <GradientStop Color="#0052A3" Offset="1"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="IconStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="22"/>
+        </Style>
+
+        <!-- Card style — solid white, thin border, subtle shadow -->
+        <Style x:Key="SolidCard" TargetType="Border">
+            <Setter Property="Background"      Value="{StaticResource CardBg}"/>
+            <Setter Property="BorderBrush"      Value="{StaticResource CardBorder}"/>
+            <Setter Property="BorderThickness"  Value="1"/>
+            <Setter Property="CornerRadius"     Value="16"/>
+            <Setter Property="Padding"          Value="32"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#94A3B8" Direction="270" ShadowDepth="2" Opacity="0.18" BlurRadius="12"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Detail row -->
+        <Style x:Key="DetailRow" TargetType="Border">
+            <Setter Property="Background"     Value="{StaticResource RowBg}"/>
+            <Setter Property="CornerRadius"    Value="12"/>
+            <Setter Property="Padding"         Value="18,14"/>
+            <Setter Property="Margin"          Value="0,0,0,10"/>
+        </Style>
+
+        <!-- Fast fade-in (no margin animation = no layout thrash) -->
+        <Storyboard x:Key="EntranceAnim">
+            <DoubleAnimation Storyboard.TargetName="RootContainer"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.3"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard Storyboard="{StaticResource EntranceAnim}"/>
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Border Background="{StaticResource PageBg}">
+        <Grid x:Name="RootContainer" Opacity="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- ════════ Header ════════ -->
+            <Border Grid.Row="0" Background="{StaticResource HeaderGradient}" Padding="44,18">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock x:Name="StatusTextBlock"
+                               Grid.Column="0"
+                               FontSize="28" FontWeight="Bold"
+                               Foreground="White"
+                               VerticalAlignment="Center"/>
+
+                    <!-- Countdown pill -->
+                    <Border Grid.Column="1" Background="#FFFFFF30" CornerRadius="18" Padding="20,8"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE121;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                       Foreground="White" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="18" FontWeight="SemiBold" Foreground="White"
+                                       VerticalAlignment="Center">
+                                <Run Text="Auto-close "/>
+                                <Run x:Name="CountdownRun" FontWeight="Black" FontSize="22"/>
+                                <Run Text="s"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- ════════ Body ════════ -->
+            <Grid Grid.Row="1" Margin="40,24,40,24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="380"/>
+                    <ColumnDefinition Width="24"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- ──── Left: Employee identity ──── -->
+                <Border Grid.Column="0" Style="{StaticResource SolidCard}">
+                    <StackPanel>
+                        <!-- Avatar -->
+                        <Border Width="180" Height="180" CornerRadius="90"
+                                BorderThickness="4" HorizontalAlignment="Center" Margin="0,0,0,22">
+                            <Border.BorderBrush>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#0066CC" Offset="0"/>
+                                    <GradientStop Color="#60A5FA" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.BorderBrush>
+                            <Border CornerRadius="86" ClipToBounds="True" Background="#EFF6FF">
+                                <Grid>
+                                    <Image x:Name="PhotoImage" Stretch="UniformToFill" Visibility="Collapsed">
+                                        <Image.Clip>
+                                            <EllipseGeometry Center="86,86" RadiusX="86" RadiusY="86"/>
+                                        </Image.Clip>
+                                    </Image>
+                                    <Viewbox x:Name="InitialViewbox" Margin="36">
+                                        <TextBlock x:Name="InitialTextBlock"
+                                                   FontSize="80" FontWeight="Black"
+                                                   Foreground="{StaticResource AccentBrush}"/>
+                                    </Viewbox>
+                                </Grid>
+                            </Border>
+                        </Border>
+
+                        <!-- Name -->
+                        <TextBlock x:Name="NameTextBlock"
+                                   FontSize="26" FontWeight="Bold"
+                                   Foreground="{StaticResource TextBlack}"
+                                   TextAlignment="Center" TextWrapping="Wrap"
+                                   Margin="0,0,0,4"/>
+
+                        <!-- ID · Staff type -->
+                        <TextBlock FontSize="15" TextAlignment="Center"
+                                   Foreground="{StaticResource TextMid}"
+                                   Margin="0,0,0,24">
+                            <Run x:Name="SchoolIdRun"/>
+                            <Run Text="  ·  " Foreground="{StaticResource TextLight}"/>
+                            <Run x:Name="EmployeeTypeRun"/>
+                        </TextBlock>
+
+                        <!-- Department -->
+                        <Border Style="{StaticResource DetailRow}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="&#xE821;" Style="{StaticResource IconStyle}"
+                                           Foreground="{StaticResource AccentBrush}"
+                                           VerticalAlignment="Center" Margin="0,0,14,0"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="DEPARTMENT" FontSize="11" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextLight}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="DepartmentTextBlock"
+                                               FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextDark}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Role -->
+                        <Border Style="{StaticResource DetailRow}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="&#xE716;" Style="{StaticResource IconStyle}"
+                                           Foreground="{StaticResource AccentBrush}"
+                                           VerticalAlignment="Center" Margin="0,0,14,0"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="ROLE" FontSize="11" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextLight}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="RoleRun" FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextDark}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- Status -->
+                        <Border Style="{StaticResource DetailRow}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="&#xE813;" Style="{StaticResource IconStyle}"
+                                           Foreground="{StaticResource AccentBrush}"
+                                           VerticalAlignment="Center" Margin="0,0,14,0"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="STATUS" FontSize="11" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextLight}" Margin="0,0,0,2"/>
+                                    <TextBlock x:Name="EmploymentStatusRun" FontSize="16" FontWeight="SemiBold"
+                                               Foreground="{StaticResource TextDark}"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <!-- ──── Right: Attendance details ──── -->
+                <Border Grid.Column="2" Style="{StaticResource SolidCard}">
+                    <StackPanel>
+                        <!-- Section header -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <TextBlock Text="&#xE9D9;" Style="{StaticResource IconStyle}"
+                                       Foreground="{StaticResource AccentBrush}" Margin="0,0,12,0"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="TODAY'S ATTENDANCE" FontSize="22" FontWeight="Bold"
+                                       Foreground="{StaticResource TextBlack}" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Unique Time In/Time Out board -->
+                        <Border Background="#EEF4FC" CornerRadius="16"
+                                Padding="20" Margin="0,0,0,18"
+                                BorderBrush="#D5E2F2" BorderThickness="1.5">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock x:Name="TapTypeTextBlock"
+                                               Grid.Column="0"
+                                               FontSize="34" FontWeight="Black"
+                                               TextAlignment="Left"
+                                               Foreground="{StaticResource AccentBrush}"/>
+
+                                    <Border Grid.Column="1" Background="#DBEAFE" BorderBrush="#93C5FD" BorderThickness="1"
+                                            CornerRadius="10" Padding="12,6" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE121;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="#1D4ED8" Margin="0,0,6,0"/>
+                                            <TextBlock Text="ACTUAL RECORD" FontSize="12" FontWeight="Bold" Foreground="#1D4ED8"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <TextBlock x:Name="StatusNotesTextBlock"
+                                           FontSize="15" FontWeight="SemiBold"
+                                           TextAlignment="Center" Margin="0,0,0,12"
+                                           Visibility="Collapsed"
+                                           Foreground="{StaticResource TextMid}"/>
+
+                                <!-- Split card: actual recorded time + scheduled range -->
+                                <Grid Margin="0,0,0,14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1.2*"/>
+                                        <ColumnDefinition Width="12"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" Background="White" CornerRadius="14"
+                                            BorderBrush="#CBD5E1" BorderThickness="1.5" Padding="18,14">
+                                        <StackPanel>
+                                            <TextBlock Text="RECORDED TAP" FontSize="12" FontWeight="Bold" Foreground="#475569" TextAlignment="Center"/>
+                                            <TextBlock x:Name="ActualTimeTextBlock"
+                                                       FontSize="54" FontWeight="Black"
+                                                       TextAlignment="Center"
+                                                       Foreground="#0F172A" Margin="0,4,0,0"/>
+                                            <TextBlock x:Name="DateTextBlock"
+                                                       FontSize="14" Foreground="{StaticResource TextMid}"
+                                                       TextAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <Border Grid.Column="2" Background="#F0FDF4" CornerRadius="14"
+                                            BorderBrush="#BBF7D0" BorderThickness="1.5" Padding="16,14">
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                                <TextBlock Text="&#xE163;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#15803D" Margin="0,0,6,0"/>
+                                                <TextBlock Text="EXPECTED SCHEDULE" FontSize="12" FontWeight="Bold" Foreground="#15803D"/>
+                                            </StackPanel>
+
+                                            <Grid x:Name="ScheduleTimeGrid">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="0" Background="White" CornerRadius="10" BorderBrush="#D1E7DD" BorderThickness="1" Padding="12,8" Margin="0,0,8,0">
+                                                    <StackPanel>
+                                                        <TextBlock Text="TIME IN" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" TextAlignment="Center"/>
+                                                        <TextBlock x:Name="TimeInTextBlock"
+                                                                   FontSize="26" FontWeight="Black"
+                                                                   Foreground="#166534"
+                                                                   TextAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Border>
+
+                                                <TextBlock Grid.Column="1" Text="→" FontSize="24" Foreground="#94A3B8" VerticalAlignment="Center" Margin="2,0"/>
+
+                                                <Border Grid.Column="2" Background="White" CornerRadius="10" BorderBrush="#D1E7DD" BorderThickness="1" Padding="12,8" Margin="8,0,0,0">
+                                                    <StackPanel>
+                                                        <TextBlock Text="TIME OUT" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" TextAlignment="Center"/>
+                                                        <TextBlock x:Name="TimeOutTextBlock"
+                                                                   FontSize="26" FontWeight="Black"
+                                                                   Foreground="#166534"
+                                                                   TextAlignment="Center"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
+
+                                            <TextBlock x:Name="NoClassesTextBlock"
+                                                       Text="No Classes Scheduled"
+                                                       FontSize="22" FontWeight="Black"
+                                                       Foreground="#64748B"
+                                                       TextAlignment="Center" Visibility="Collapsed"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                                    <Border x:Name="StatusBadgeBorder"
+                                            CornerRadius="12" Padding="16,12"
+                                            Margin="0,0,8,0"
+                                            Visibility="Collapsed"
+                                            Background="#FFF3E0" BorderBrush="#FF9800" BorderThickness="1.5">
+                                        <TextBlock x:Name="StatusBadgeTextBlock"
+                                                   FontSize="18" FontWeight="Black"
+                                                   TextAlignment="Center" Foreground="#C62828"/>
+                                    </Border>
+
+                                    <Border x:Name="ScheduleSourceBadgeBorder"
+                                            CornerRadius="12"
+                                            Padding="14,10"
+                                            Visibility="Collapsed"
+                                            Background="#EFF6FF"
+                                            BorderBrush="#93C5FD"
+                                            BorderThickness="1.5">
+                                        <TextBlock x:Name="ScheduleSourceBadgeTextBlock"
+                                                   FontSize="14"
+                                                   FontWeight="Bold"
+                                                   TextAlignment="Center"
+                                                   Foreground="#1D4ED8"
+                                                   TextWrapping="Wrap"
+                                                   MaxWidth="520"/>
+                                    </Border>
+                                </WrapPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- ════════ Footer ════════ -->
+            <Border Grid.Row="2" Background="#E2E8F0" Padding="0,10">
+                <TextBlock Text="This window will close automatically  ·  Press ESC to dismiss"
+                           FontSize="12" Foreground="{StaticResource TextMid}"
+                           TextAlignment="Center" FontStyle="Italic"/>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
